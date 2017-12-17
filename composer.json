@@ -1,5 +1,5 @@
 {
-  "name": "cakephp-plugin-sortable",
+  "name": "oppara/cakephp-plugin-sortable",
   "description": "CakePHP plugin that mainly for jQuery UI Sortable ",
   "type": "cakephp-plugin",
   "keywords": [
