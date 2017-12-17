@@ -1,5 +1,7 @@
 # CakePHP plugin that mainly for (jQuery UI Sortable)[https://jqueryui.com/sortable/]
 
+[![Build Status](https://travis-ci.org/oppara/cakephp-plugin-sortable.svg?branch=master)](https://travis-ci.org/oppara/cakephp-plugin-sortable)
+
 ## Installation
 
 ```
