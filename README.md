@@ -1,10 +1,6 @@
-# Sortable plugin for CakePHP
+# CakePHP plugin that mainly for (jQuery UI Sortable)[https://jqueryui.com/sortable/]
 
 ## Installation
-
-You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
-
-The recommended way to install composer packages is:
 
 ```
 composer require oppara/cakephp-plugin-sortable
@@ -12,14 +8,20 @@ composer require oppara/cakephp-plugin-sortable
 
 ## Enable plugin
 
-You need to enable the plugin your config/bootstrap.php file:
 
-```
+```php
+// config/bootstrap.php
 <?php
 Plugin::load('Sortable');
 ```
 
-If you are already using `Plugin::loadAll();`, then this is not necessary.
+or
+
+```php
+// config/bootstrap.php
+<?php
+Plugin::loadAll();
+```
 
 
 ## Examples
