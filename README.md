@@ -1,6 +1,7 @@
 # CakePHP plugin that mainly for [jQuery UI Sortable](https://jqueryui.com/sortable/)
 
 [![Build Status](https://travis-ci.org/oppara/cakephp-plugin-sortable.svg?branch=master)](https://travis-ci.org/oppara/cakephp-plugin-sortable)
+[![codecov](https://codecov.io/gh/oppara/cakephp-plugin-sortable/branch/master/graph/badge.svg)](https://codecov.io/gh/oppara/cakephp-plugin-sortable)
 
 ## Installation
 
