@@ -26,7 +26,7 @@ class SortableBehavior extends Behavior
     ];
 
     /**
-     * Set the new entity's display order before it is saved
+     * Set the entity's display order before it is saved
      *
      * @param \Cake\Event\Event $event The beforeSave event that was fired
      * @param \Cake\ORM\Entity $entity The entity that is going to be saved
@@ -35,7 +35,7 @@ class SortableBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        if (!$entity->isNew()) {
+        if (!$entity->isNew() && !$this->_hasDirtyConditionFields($entity)) {
             return;
         }
 
@@ -46,6 +46,54 @@ class SortableBehavior extends Behavior
         $field = $this->getConfig('field');
 
         $entity->set($field, $count + 1);
+    }
+
+    /**
+     * Decrease the display order when condition fields changed
+     *
+     * @param \Cake\Event\Event $event The beforeSave event that was fired
+     * @param \Cake\ORM\Entity $entity The entity that is going to be saved
+     * @param \ArrayObject $options the options passed to the save method
+     * @return void
+     */
+    public function afterSave(Event $event, Entity $entity, ArrayObject $options)
+    {
+        $conditions = [];
+        $fields = $this->getConfig('condition_fields');
+        foreach ($fields as $field) {
+            $original = $entity->getOriginal($field);
+            if ($entity->{$field} != $original) {
+                $conditions[] = [$field => $original];
+            }
+        }
+
+        if (empty($conditions)) {
+            return;
+        }
+
+        $field = $this->getConfig('field');
+        $position = $entity->getOriginal($field);
+        $expression = new QueryExpression($this->_makeExpression('-'));
+        $conditions[] = [$field . ' >' => $position];
+        $table = $this->getTable();
+        $table->updateAll([$expression], $conditions);
+    }
+
+    /**
+     * Dose the entity has dirty condition fields?
+     *
+     * @param \Cake\ORM\Entity $entity The entity that is going to be saved
+     * @return bool
+     */
+    protected function _hasDirtyConditionFields(Entity $entity)
+    {
+        foreach ($this->config('condition_fields') as $field) {
+            if ($entity->dirty($field)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
