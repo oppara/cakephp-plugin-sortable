@@ -177,6 +177,29 @@ class SortableBehaviorTest extends TestCase
         }
     }
 
+    public function testBeforeSaveOnUpdateWithDirtyContidionField()
+    {
+        $this->saveArticles();
+
+        $entity = $this->Articles->get(10);
+        $entity->company_id = 2;
+        $entity->author_id = 2;
+        $this->Articles->save($entity);
+
+        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $idx = 0;
+
+        // company_id       1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 3
+        // author_id        1, 2, 2, 3, 3, 3, 4, 5, 6, 2, 6
+        $expected_ids    = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        $expected_orders = [1, 1, 2, 1, 2, 3, 1, 1, 1, 3, 2];
+        foreach ($query as $row) {
+            $this->assertSame($expected_ids[$idx], $row->id);
+            $this->assertSame($expected_orders[$idx], $row->position, 'id=' . $row->id);
+            $idx++;
+        }
+    }
+
     public function testAfterDeleteOnCreateWithCustomConfig()
     {
         $this->saveArticles();
