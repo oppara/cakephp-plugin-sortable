@@ -51,7 +51,7 @@ class ArticlesTable extends Tabl
 {
     public function initialize(array $config)
     {
-        $this->addBehavior('Sortable', [
+        $this->addBehavior('Sortable.Sortable', [
             'condition_fields' => ['user_id']
         ]);
     }
