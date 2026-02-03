@@ -3,6 +3,11 @@
 [![Build Status](https://travis-ci.org/oppara/cakephp-plugin-sortable.svg?branch=master)](https://travis-ci.org/oppara/cakephp-plugin-sortable)
 [![codecov](https://codecov.io/gh/oppara/cakephp-plugin-sortable/branch/master/graph/badge.svg)](https://codecov.io/gh/oppara/cakephp-plugin-sortable)
 
+## Requirements
+
+- CakePHP 4.0 or higher
+- PHP 7.2 or higher
+
 ## Installation
 
 ```
@@ -11,21 +16,16 @@ composer require oppara/cakephp-plugin-sortable
 
 ## Enable plugin
 
+Add the plugin to your application's bootstrap:
 
 ```php
-// config/bootstrap.php
-<?php
-Plugin::load('Sortable');
+// src/Application.php
+public function bootstrap(): void
+{
+    parent::bootstrap();
+    $this->addPlugin('Sortable');
+}
 ```
-
-or
-
-```php
-// config/bootstrap.php
-<?php
-Plugin::loadAll();
-```
-
 
 ## Examples
 
@@ -83,10 +83,11 @@ class ArticlesController extends AppController
 ```
 
 ```php
-//  src/Template/Articles/index.ctp
+//  src/templates/Articles/index.php
 
-$this->Html->css(['sort'], ['block' => true]);
-$this->Html->script(['jquery-ui.min', 'sort'], ['block' => true]);
+echo $this->Html->css(['sort'], ['block' => true]);
+echo $this->Html->script(['jquery-ui.min', 'sort'], ['block' => true]);
+?>
 
 <div class="row">
   <div class="col-md-12">
@@ -99,7 +100,7 @@ $this->Html->script(['jquery-ui.min', 'sort'], ['block' => true]);
         </thead>
         <tbody>
             <?php foreach ($articles as $article): ?>
-            <tr data-id="<?= $article->id ?>" data-url="<?= Router::url(['controller' => 'articles', 'action' => 'sort']) ?>">
+            <tr data-id="<?= $article->id ?>" data-url="<?= $this->Url->build(['controller' => 'Articles', 'action' => 'sort']) ?>">
                 <td class="handle"><?= h($article->title) ?></td>
                 <td class="actions">
                     <?= $this->Html->link('View', ['action' => 'view', $article->id], ['class' => 'btn btn-info btn-sm']) ?>
@@ -156,5 +157,3 @@ $(function(){
 
 });
 ```
-
-

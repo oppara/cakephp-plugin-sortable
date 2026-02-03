@@ -3,7 +3,7 @@ namespace Sortable\Model\Behavior;
 
 use ArrayObject;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Event\Event;
+use Cake\Event\EventInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 
@@ -28,12 +28,12 @@ class SortableBehavior extends Behavior
     /**
      * Set the entity's display order before it is saved
      *
-     * @param \Cake\Event\Event $event The beforeSave event that was fired
+     * @param \Cake\Event\EventInterface $event The beforeSave event that was fired
      * @param \Cake\ORM\Entity $entity The entity that is going to be saved
      * @param \ArrayObject $options the options passed to the save method
      * @return void
      */
-    public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
+    public function beforeSave(EventInterface $event, Entity $entity, ArrayObject $options)
     {
         if (!$entity->isNew() && !$this->_hasDirtyConditionFields($entity)) {
             return;
@@ -51,12 +51,12 @@ class SortableBehavior extends Behavior
     /**
      * Decrease the display order when condition fields changed
      *
-     * @param \Cake\Event\Event $event The beforeSave event that was fired
+     * @param \Cake\Event\EventInterface $event The beforeSave event that was fired
      * @param \Cake\ORM\Entity $entity The entity that is going to be saved
      * @param \ArrayObject $options the options passed to the save method
      * @return void
      */
-    public function afterSave(Event $event, Entity $entity, ArrayObject $options)
+    public function afterSave(EventInterface $event, Entity $entity, ArrayObject $options)
     {
         $conditions = [];
         $fields = $this->getConfig('condition_fields');
@@ -76,7 +76,7 @@ class SortableBehavior extends Behavior
         $expression = new QueryExpression($this->_makeExpression('-'));
         $conditions[] = [$field . ' >' => $position];
         $table = $this->getTable();
-        $table->updateAll([$expression], $conditions);
+        $table->updateAll([$field => $expression], $conditions);
     }
 
     /**
@@ -87,8 +87,8 @@ class SortableBehavior extends Behavior
      */
     protected function _hasDirtyConditionFields(Entity $entity)
     {
-        foreach ($this->config('condition_fields') as $field) {
-            if ($entity->dirty($field)) {
+        foreach ($this->getConfig('condition_fields') as $field) {
+            if ($entity->isDirty($field)) {
                 return true;
             }
         }
@@ -99,12 +99,12 @@ class SortableBehavior extends Behavior
     /**
      * Decrease the display order after the entity is deleted
      *
-     * @param \Cake\Event\Event $event The afterDelete event that was fired
+     * @param \Cake\Event\EventInterface $event The afterDelete event that was fired
      * @param \Cake\ORM\Entity $entity The entity that was deleted
      * @param \ArrayObject $options the options passed to the delete method
      * @return void
      */
-    public function afterDelete(Event $event, Entity $entity, ArrayObject $options)
+    public function afterDelete(EventInterface $event, Entity $entity, ArrayObject $options)
     {
         $field = $this->getConfig('field');
         $position = $entity->{$field};
@@ -114,7 +114,7 @@ class SortableBehavior extends Behavior
         $conditions[] = [$field . ' >' => $position];
 
         $table = $this->getTable();
-        $table->updateAll([$expression], $conditions);
+        $table->updateAll([$field => $expression], $conditions);
     }
 
     /**
@@ -168,7 +168,7 @@ class SortableBehavior extends Behavior
         ];
 
         $table = $this->getTable();
-        $table->updateAll([$expression], $conditions);
+        $table->updateAll([$field => $expression], $conditions);
     }
 
     /**
@@ -191,7 +191,7 @@ class SortableBehavior extends Behavior
         ];
 
         $table = $this->getTable();
-        $table->updateAll([$expression], $conditions);
+        $table->updateAll([$field => $expression], $conditions);
     }
 
     /**
