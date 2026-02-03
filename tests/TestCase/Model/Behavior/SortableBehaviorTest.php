@@ -3,7 +3,7 @@ namespace Sortable\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
+use Cake\ORM\Locator\TableLocator;
 use Cake\TestSuite\TestCase;
 use Sortable\Model\Behavior\SortableBehavior;
 
@@ -13,22 +13,23 @@ use Sortable\Model\Behavior\SortableBehavior;
 class SortableBehaviorTest extends TestCase
 {
     public $fixtures = [
-        'plugin.sortable.articles',
-        'plugin.sortable.sections',
+        'plugin.Sortable.Articles',
+        'plugin.Sortable.Sections',
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+        $tableLocator = new TableLocator();
 
         $this->entity = $this->getMockBuilder('Cake\ORM\Entity')->getMock();
         $this->table = $this->getMockBuilder('Cake\ORM\Table')->getMock();
         $this->behavior = new SortableBehavior($this->table, []);
 
-        $this->Sections = TableRegistry::get('Sortable.Sections');
+        $this->Sections = $tableLocator->get('Sortable.Sections');
         $this->Sections->addBehavior('Sortable.Sortable');
 
-        $this->Articles = TableRegistry::get('Sortable.Articles');
+        $this->Articles = $tableLocator->get('Sortable.Articles');
         $this->Articles->addBehavior('Sortable.Sortable', [
             'field' => 'position',
             'condition_fields' => ['company_id', 'author_id']
