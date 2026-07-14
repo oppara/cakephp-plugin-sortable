@@ -5,8 +5,8 @@
 
 ## Requirements
 
-- CakePHP 4.0 or higher
-- PHP 7.2 or higher
+- CakePHP 5.0 or higher
+- PHP 8.1 or higher
 
 ## Installation
 
@@ -47,9 +47,9 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class ArticlesTable extends Tabl
+class ArticlesTable extends Table
 {
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->addBehavior('Sortable.Sortable', [
             'condition_fields' => ['user_id']

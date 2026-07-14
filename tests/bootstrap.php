@@ -22,6 +22,11 @@ unset($findRoot);
 
 chdir($root);
 
+$schemaFile = $root . '/tests/schema.php';
+if (!getenv('FIXTURE_SCHEMA_METADATA') && file_exists($schemaFile)) {
+    putenv('FIXTURE_SCHEMA_METADATA=' . $schemaFile);
+}
+
 if (file_exists($root . '/config/bootstrap.php')) {
     require $root . '/config/bootstrap.php';
 

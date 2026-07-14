@@ -20,7 +20,7 @@ class SortableBehavior extends Behavior
      * - condition_fields List of field names used for WHERE clause
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'field' => 'display_order',
         'condition_fields' => [],
     ];
@@ -39,9 +39,9 @@ class SortableBehavior extends Behavior
             return;
         }
 
-        $table = $this->getTable();
+        $table = $this->table();
         $conditions = $this->_makeConditions($entity);
-        $count = $table->find('all', compact('conditions'))->count();
+        $count = $table->find('all', conditions: $conditions)->count();
 
         $field = $this->getConfig('field');
 
@@ -75,7 +75,7 @@ class SortableBehavior extends Behavior
         $position = $entity->getOriginal($field);
         $expression = new QueryExpression($this->_makeExpression('-'));
         $conditions[] = [$field . ' >' => $position];
-        $table = $this->getTable();
+        $table = $this->table();
         $table->updateAll([$field => $expression], $conditions);
     }
 
@@ -113,7 +113,7 @@ class SortableBehavior extends Behavior
         $conditions = $this->_makeConditions($entity);
         $conditions[] = [$field . ' >' => $position];
 
-        $table = $this->getTable();
+        $table = $this->table();
         $table->updateAll([$field => $expression], $conditions);
     }
 
@@ -126,7 +126,7 @@ class SortableBehavior extends Behavior
      */
     public function sort($id, $new_order)
     {
-        $table = $this->getTable();
+        $table = $this->table();
         $entity = $table->get($id);
 
         $field = $this->getConfig('field');
@@ -167,7 +167,7 @@ class SortableBehavior extends Behavior
             $field . ' <=' => $new_order,
         ];
 
-        $table = $this->getTable();
+        $table = $this->table();
         $table->updateAll([$field => $expression], $conditions);
     }
 
@@ -190,7 +190,7 @@ class SortableBehavior extends Behavior
             $field . ' <' => $current_order,
         ];
 
-        $table = $this->getTable();
+        $table = $this->table();
         $table->updateAll([$field => $expression], $conditions);
     }
 
@@ -219,7 +219,7 @@ class SortableBehavior extends Behavior
      */
     protected function _makeExpression($operator)
     {
-        $fmt = '%1$s = %1$s %2$s 1';
+        $fmt = '%1$s %2$s 1';
         $field = $this->getConfig('field');
 
         return sprintf($fmt, $field, $operator);

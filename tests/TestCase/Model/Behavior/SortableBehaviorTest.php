@@ -12,18 +12,28 @@ use Sortable\Model\Behavior\SortableBehavior;
  */
 class SortableBehaviorTest extends TestCase
 {
-    public $fixtures = [
+    protected array $fixtures = [
         'plugin.Sortable.Articles',
         'plugin.Sortable.Sections',
     ];
+
+    protected Entity $entity;
+
+    protected Table $table;
+
+    protected SortableBehavior $behavior;
+
+    protected Table $Sections;
+
+    protected Table $Articles;
 
     public function setUp(): void
     {
         parent::setUp();
         $tableLocator = new TableLocator();
 
-        $this->entity = $this->getMockBuilder('Cake\ORM\Entity')->getMock();
-        $this->table = $this->getMockBuilder('Cake\ORM\Table')->getMock();
+        $this->entity = $this->getMockBuilder(Entity::class)->getMock();
+        $this->table = $this->getMockBuilder(Table::class)->getMock();
         $this->behavior = new SortableBehavior($this->table, []);
 
         $this->Sections = $tableLocator->get('Sortable.Sections');
@@ -58,7 +68,7 @@ class SortableBehaviorTest extends TestCase
     {
         $this->saveSections();
 
-        $query = $this->Sections->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Sections->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6];
         $expected_orders = [1, 2, 3, 4, 5, 6];
@@ -77,7 +87,7 @@ class SortableBehaviorTest extends TestCase
         $entity->name = 'foobar';
         $this->Sections->save($entity);
 
-        $query = $this->Sections->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Sections->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6];
         $expected_orders = [1, 2, 3, 4, 5, 6];
@@ -97,7 +107,7 @@ class SortableBehaviorTest extends TestCase
         $entity = $this->Sections->get(4);
         $this->Sections->delete($entity);
 
-        $query = $this->Sections->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Sections->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 3, 5, 6];
         $expected_orders = [1, 2, 3, 4];
@@ -113,9 +123,9 @@ class SortableBehaviorTest extends TestCase
         $this->saveSections();
 
         // id = 1 to 3rd
-        $this->Sections->sort(1, 3);
+        $this->Sections->getBehavior('Sortable')->sort(1, 3);
 
-        $query = $this->Sections->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Sections->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6];
         $expected_orders = [3, 1, 2, 4, 5, 6];
@@ -131,9 +141,9 @@ class SortableBehaviorTest extends TestCase
         $this->saveSections();
 
         // id = 4 to 2nd
-        $this->Sections->sort(4, 2);
+        $this->Sections->getBehavior('Sortable')->sort(4, 2);
 
-        $query = $this->Sections->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Sections->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6];
         $expected_orders = [1, 3, 4, 2, 5, 6];
@@ -148,7 +158,7 @@ class SortableBehaviorTest extends TestCase
     {
         $this->saveArticles();
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         $expected_orders = [1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 3];
@@ -167,7 +177,7 @@ class SortableBehaviorTest extends TestCase
         $entity->title = 'foobar';
         $this->Articles->save($entity);
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         $expected_orders = [1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 3];
@@ -187,7 +197,7 @@ class SortableBehaviorTest extends TestCase
         $entity->author_id = 2;
         $this->Articles->save($entity);
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
 
         // company_id       1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 3
@@ -210,7 +220,7 @@ class SortableBehaviorTest extends TestCase
         $entity = $this->Articles->get(10);
         $this->Articles->delete($entity);
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 3, 4, 5, 6, 7, 8, 9, 11];
         $expected_orders = [1, 1, 1, 2, 3, 1, 1, 1, 2];
@@ -226,11 +236,11 @@ class SortableBehaviorTest extends TestCase
         $this->saveArticles();
 
         // id = 2 to 2nd
-        $this->Articles->sort(2, 2);
+        $this->Articles->getBehavior('Sortable')->sort(2, 2);
         // id = 9 to 3rd
-        $this->Articles->sort(9, 3);
+        $this->Articles->getBehavior('Sortable')->sort(9, 3);
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         $expected_orders = [1, 2, 1, 1, 2, 3, 1, 1, 3, 1, 2];
@@ -246,13 +256,13 @@ class SortableBehaviorTest extends TestCase
         $this->saveArticles();
 
         // id = 2 to 1st
-        $this->Articles->sort(3, 1);
+        $this->Articles->getBehavior('Sortable')->sort(3, 1);
         // id = 6 to 2nd
-        $this->Articles->sort(6, 2);
+        $this->Articles->getBehavior('Sortable')->sort(6, 2);
         // id = 11 to 1st
-        $this->Articles->sort(11, 1);
+        $this->Articles->getBehavior('Sortable')->sort(11, 1);
 
-        $query = $this->Articles->find('all', ['order' => ['id' => 'ASC']]);
+        $query = $this->Articles->find('all', order: ['id' => 'ASC']);
         $idx = 0;
         $expected_ids    = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         $expected_orders = [1, 2, 1, 1, 3, 2, 1, 1, 2, 3, 1];
@@ -275,7 +285,7 @@ class SortableBehaviorTest extends TestCase
             'huga',
         ];
         foreach ($data as $name) {
-            $entity = $this->Sections->newEntity();
+            $entity = $this->Sections->newEmptyEntity();
             $entity->name = $name;
             $this->Sections->save($entity);
         }
@@ -297,7 +307,7 @@ class SortableBehaviorTest extends TestCase
             ['id' => 11, 'company_id' => 3, 'author_id' => 6, 'title' => 'hage3'],
         ];
         foreach ($data as $values) {
-            $entity = $this->Articles->newEntity();
+            $entity = $this->Articles->newEmptyEntity();
             foreach ($values as $name => $val) {
                 $entity->{$name} = $val;
             }
